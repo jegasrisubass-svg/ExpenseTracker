@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SpendWise AI - Expense Tracker</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <div>
+                <h2>SpendWise</h2>
+                <span>AI Expense Tracker</span>
+            </div>
+        </div>
+
+        <nav>
+
+            <button class="nav-btn active" onclick="showSection('dashboard')">
+                <i class="fa-solid fa-chart-pie"></i>
+                Dashboard
+            </button>
+
+            <button class="nav-btn" onclick="showSection('expenses')">
+                <i class="fa-solid fa-receipt"></i>
+                Expenses
+            </button>
+
+            <button class="nav-btn" onclick="showSection('analytics')">
+                <i class="fa-solid fa-chart-column"></i>
+                Analytics
+            </button>
+
+            <button class="nav-btn" onclick="showSection('chat')">
+                <i class="fa-solid fa-robot"></i>
+                AI Assistant
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="tip-box">
+                <i class="fa-solid fa-lightbulb"></i>
+                <div>
+                    <b>Smart Tip</b>
+                    <p>Track small expenses before they become big!</p>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div>
+                <h1 id="pageTitle">Dashboard</h1>
+                <p id="dateText"></p>
+            </div>
+
+            <div class="top-actions">
+
+                <button class="icon-btn" onclick="openExpenseModal()">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <div class="profile">
+                    <div class="avatar">J</div>
+                    <div>
+                        <b>My Wallet</b>
+                        <small>Personal</small>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="section active">
+
+            <!-- ALERT -->
+            <div id="budgetAlert" class="budget-alert hidden">
+                <div class="alert-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+
+                <div>
+                    <strong>Daily Spending Alert!</strong>
+                    <p>You have crossed your ₹1,000 daily spending limit.</p>
+                </div>
+
+                <button onclick="closeAlert()">×</button>
+            </div>
+
+
+            <!-- CARDS -->
+            <div class="cards">
+
+                <div class="card total-card">
+                    <div class="card-top">
+                        <span>Total Spent</span>
+                        <div class="card-icon">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+
+                    <h2 id="totalSpent">₹0</h2>
+                    <p><i class="fa-solid fa-arrow-trend-up"></i> All expenses</p>
+                </div>
+
+
+                <div class="card today-card">
+                    <div class="card-top">
+                        <span>Today's Spending</span>
+                        <div class="card-icon">
+                            <i class="fa-solid fa-calendar-day"></i>
+                        </div>
+                    </div>
+
+                    <h2 id="todaySpent">₹0</h2>
+                    <p>Daily limit: ₹1,000</p>
+                </div>
+
+
+                <div class="card budget-card">
+                    <div class="card-top">
+                        <span>Monthly Budget</span>
+                        <div class="card-icon">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                    </div>
+
+                    <h2 id="monthlyBudget">₹20,000</h2>
+                    <p id="budgetRemaining">₹20,000 remaining</p>
+                </div>
+
+
+                <div class="card count-card">
+                    <div class="card-top">
+                        <span>Transactions</span>
+                        <div class="card-icon">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                    </div>
+
+                    <h2 id="transactionCount">0</h2>
+                    <p>Recorded expenses</p>
+                </div>
+
+            </div>
+
+
+            <!-- DASHBOARD GRID -->
+            <div class="dashboard-grid">
+
+                <!-- RECENT -->
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Recent Expenses</h3>
+                            <p>Your latest transactions</p>
+                        </div>
+
+                        <button onclick="showSection('expenses')" class="view-btn">
+                            View All
+                        </button>
+                    </div>
+
+                    <div id="recentExpenses" class="expense-list">
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORY -->
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Category Summary</h3>
+                            <p>Where your money goes</p>
+                        </div>
+                    </div>
+
+                    <div id="categorySummary"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ADD -->
+            <div class="quick-panel">
+
+                <div>
+                    <h3>Quick Add Expense</h3>
+                    <p>Add your spending in seconds</p>
+                </div>
+
+                <button class="primary-btn" onclick="openExpenseModal()">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Expense
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- EXPENSES -->
+        <section id="expenses" class="section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Expense History</h2>
+                    <p>Manage all your transactions</p>
+                </div>
+
+                <button class="primary-btn" onclick="openExpenseModal()">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Expense
+                </button>
+            </div>
+
+            <div class="filter-bar">
+
+                <input
+                    type="text"
+                    id="searchExpense"
+                    placeholder="🔍 Search expenses..."
+                    oninput="renderExpenses()">
+
+                <select id="filterCategory" onchange="renderExpenses()">
+                    <option value="all">All Categories</option>
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Health">Health</option>
+                    <option value="Education">Education</option>
+                    <option value="Other">Other</option>
+                </select>
+
+            </div>
+
+            <div class="panel">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Expense</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="expenseTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ANALYTICS -->
+        <section id="analytics" class="section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Analytics</h2>
+                    <p>Understand your spending habits</p>
+                </div>
+            </div>
+
+            <div class="analytics-cards">
+
+                <div class="analytics-card">
+                    <span>Highest Category</span>
+                    <h2 id="highestCategory">—</h2>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Average Expense</span>
+                    <h2 id="averageExpense">₹0</h2>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Biggest Expense</span>
+                    <h2 id="biggestExpense">₹0</h2>
+                </div>
+
+            </div>
+
+            <div class="panel chart-panel">
+
+                <h3>Category Spending</h3>
+
+                <div id="chart"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CHAT -->
+        <section id="chat" class="section">
+
+            <div class="chat-layout">
+
+                <div class="chat-container">
+
+                    <div class="chat-header">
+
+                        <div class="bot-avatar">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+
+                        <div>
+                            <h3>SpendWise AI</h3>
+                            <p>
+                                <span class="online"></span>
+                                Online • English + Tamil
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div id="chatMessages" class="chat-messages">
+
+                        <div class="message bot">
+                            <div class="message-avatar">
+                                🤖
+                            </div>
+
+                            <div class="bubble">
+                                <b>Hi! I'm SpendWise AI 👋</b>
+
+                                <p>
+                                    You can tell me your expenses naturally.
+                                </p>
+
+                                <p>
+                                    Example:
+                                    <br>
+                                    "I spent ₹250 for food"
+                                    <br>
+                                    "Naan food ku 200 spend pannen"
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="suggestions">
+
+                        <button onclick="quickChat('Today expense')">
+                            📅 Today
+                        </button>
+
+                        <button onclick="quickChat('Show history')">
+                            📜 History
+                        </button>
+
+                        <button onclick="quickChat('How much I spent?')">
+                            💰 Total
+                        </button>
+
+                        <button onclick="quickChat('Give me saving tip')">
+                            💡 Saving Tip
+                        </button>
+
+                    </div>
+
+
+                    <div class="chat-input">
+
+                        <input
+                            id="chatInput"
+                            type="text"
+                            placeholder="Type in English or Tamil..."
+                            onkeydown="handleChatKey(event)">
+
+                        <button onclick="sendMessage()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CHAT HISTORY -->
+                <div class="chat-history">
+
+                    <div class="history-header">
+                        <h3>Chat History</h3>
+
+                        <button onclick="clearChat()">
+                            Clear
+                        </button>
+                    </div>
+
+                    <div id="historyList"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ADD EXPENSE MODAL -->
+
+<div id="expenseModal" class="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Add Expense</h2>
+                <p>Record your spending</p>
+            </div>
+
+            <button onclick="closeExpenseModal()">×</button>
+
+        </div>
+
+
+        <form id="expenseForm" onsubmit="addExpense(event)">
+
+            <label>Expense Name</label>
+
+            <input
+                type="text"
+                id="expenseName"
+                placeholder="Example: Lunch"
+                required>
+
+
+            <label>Amount</label>
+
+            <div class="amount-input">
+                <span>₹</span>
+
+                <input
+                    type="number"
+                    id="expenseAmount"
+                    placeholder="0"
+                    min="1"
+                    required>
+            </div>
+
+
+            <label>Category</label>
+
+            <select id="expenseCategory">
+
+                <option value="Food">🍔 Food</option>
+                <option value="Transport">🚕 Transport</option>
+                <option value="Shopping">🛍️ Shopping</option>
+                <option value="Bills">💡 Bills</option>
+                <option value="Entertainment">🎬 Entertainment</option>
+                <option value="Health">💊 Health</option>
+                <option value="Education">📚 Education</option>
+                <option value="Other">📦 Other</option>
+
+            </select>
+
+
+            <label>Date</label>
+
+            <input
+                type="date"
+                id="expenseDate"
+                required>
+
+
+            <button class="primary-btn submit-btn">
+                <i class="fa-solid fa-check"></i>
+                Save Expense
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div id="toast"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
